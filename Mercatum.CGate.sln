@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CGateMonitor", "CGateMonitor\CGateMonitor.csproj", "{A07B215D-6097-407E-AC6C-2FFFE7364DA9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CGateLib", "CGateLib\CGateLib.csproj", "{B32F04CB-716C-46E3-B97E-677F1D30A855}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A07B215D-6097-407E-AC6C-2FFFE7364DA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A07B215D-6097-407E-AC6C-2FFFE7364DA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A07B215D-6097-407E-AC6C-2FFFE7364DA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A07B215D-6097-407E-AC6C-2FFFE7364DA9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B32F04CB-716C-46E3-B97E-677F1D30A855}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B32F04CB-716C-46E3-B97E-677F1D30A855}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B32F04CB-716C-46E3-B97E-677F1D30A855}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B32F04CB-716C-46E3-B97E-677F1D30A855}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
