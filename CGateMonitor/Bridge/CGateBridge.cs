@@ -98,10 +98,14 @@ namespace Mercatum.CGateMonitor.Bridge
 
         private void CGateDataExchangeWorker(object parameter)
         {
-            CGateConnectionTarget target = new CGateConnectionTarget(CGateConnectionType.Tcp,
-                                                                     host: "127.0.0.1",
-                                                                     port: 4001,
-                                                                     appName: "cgate_monitor");
+            var target = new CGateConnectionTarget
+                         {
+                             Type = CGateConnectionType.Tcp,
+                             Host = "127.0.0.1",
+                             Port = 4001,
+                             AppName = "cgate_monitor"
+                         };
+
             CGateConnection connection = new CGateConnection(target);
             CGateDataExchange exchange = new CGateDataExchange(connection);
 
