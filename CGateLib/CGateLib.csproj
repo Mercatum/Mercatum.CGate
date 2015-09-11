@@ -52,6 +52,8 @@
     <Compile Include="CGateDataExchange.cs" />
     <Compile Include="CGateEnvironment.cs" />
     <Compile Include="CGateListenerType.cs" />
+    <Compile Include="CGateLogLevel.cs" />
+    <Compile Include="CGateLogMode.cs" />
     <Compile Include="CGateSettingsFormatter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

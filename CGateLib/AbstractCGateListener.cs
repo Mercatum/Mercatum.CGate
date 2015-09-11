@@ -212,7 +212,7 @@ namespace Mercatum.CGate
             }
             catch( Exception )
             {
-                // TODO: report unhandled exceptions via an event
+                // TODO: report unhandled exceptions via an event or via CGateEnvironment.Log*
                 return 1;
             }
         }
