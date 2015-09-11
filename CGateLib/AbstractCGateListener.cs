@@ -13,7 +13,8 @@ namespace Mercatum.CGate
     /// </summary>
     public abstract class AbstractCGateListener : IDisposable
     {
-        protected Listener _listener;
+        protected Listener Listener { get; set; }
+
         private bool _disposed;
 
         public State State
@@ -21,7 +22,7 @@ namespace Mercatum.CGate
             get
             {
                 ErrorIfDisposed();
-                return _listener == null ? State.Closed : _listener.State;
+                return Listener == null ? State.Closed : Listener.State;
             }
         }
 
@@ -37,8 +38,8 @@ namespace Mercatum.CGate
         {
             ErrorIfDisposed();
 
-            if( _listener != null )
-                _listener.Close();
+            if( Listener != null )
+                Listener.Close();
         }
 
 
@@ -54,7 +55,7 @@ namespace Mercatum.CGate
             {
                 if( disposing )
                 {
-                    _listener.Dispose();
+                    Listener.Dispose();
                 }
 
                 _disposed = true;
@@ -149,8 +150,8 @@ namespace Mercatum.CGate
                 CGateSettingsFormatter.FormatNewListenerSettings(CGateListenerType.Replication,
                                                                  streamName);
 
-            _listener = new Listener(connection.Handle, settings);
-            _listener.Handler += HandleMessage;
+            Listener = new Listener(connection.Handle, settings);
+            Listener.Handler += HandleMessage;
 
             EnableSnapshotMode = true;
             EnableOnlineMode = true;
@@ -164,7 +165,7 @@ namespace Mercatum.CGate
             ErrorIfDisposed();
 
             string settings = FormatListenerOpenSettings();
-            _listener.Open(settings);
+            Listener.Open(settings);
         }
 
 
@@ -210,9 +211,9 @@ namespace Mercatum.CGate
 
                 return 0;
             }
-            catch( Exception )
+            catch( Exception e )
             {
-                // TODO: report unhandled exceptions via an event or via CGateEnvironment.Log*
+                CGateEnvironment.LogError("Unexpected error in HandleMessage: {0}", e);
                 return 1;
             }
         }
@@ -235,7 +236,7 @@ namespace Mercatum.CGate
 
                 // TODO: keep scheme in DataArrivedEventArgs, expose tableName and `inserted` as properties there
                 // to be calculated only when required
-                SchemeDesc scheme = _listener.Scheme;
+                SchemeDesc scheme = Listener.Scheme;
                 MessageDesc messageDesc = scheme.Messages[streamDataMessage.MsgIndex];
                 string tableName = messageDesc.Name;
 
@@ -298,7 +299,7 @@ namespace Mercatum.CGate
             EventHandler<DataClearedEventArgs> handler = DataCleared;
             if( handler != null )
             {
-                SchemeDesc scheme = _listener.Scheme;
+                SchemeDesc scheme = Listener.Scheme;
                 MessageDesc messageDesc = scheme.Messages[clearDeletedMessage.TableIdx];
                 string tableName = messageDesc.Name;
 
