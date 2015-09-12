@@ -66,5 +66,14 @@ namespace Mercatum.CGate
         /// UNSTABLE: what is this?
         /// </remarks>
         public string Name { get; set; }
+
+
+        public CGateConnectionTarget()
+        {
+            // Set up reasonable default values
+            OpenTimeout = 5000;
+            LrpcqTimeout = 5000;
+            LrpcqBufferSize = 16384;
+        }
     }
 }

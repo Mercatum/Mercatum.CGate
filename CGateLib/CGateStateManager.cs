@@ -6,7 +6,7 @@ using ru.micexrts.cgate;
 
 namespace Mercatum.CGate
 {
-    public class CGateDataExchange
+    public class CGateStateManager
     {
         private readonly CGateConnection _connection;
         private readonly List<ListenerHolder> _listeners = new List<ListenerHolder>();
@@ -25,7 +25,7 @@ namespace Mercatum.CGate
         }
 
 
-        public CGateDataExchange(CGateConnection connection)
+        public CGateStateManager(CGateConnection connection)
         {
             _connection = connection;
         }

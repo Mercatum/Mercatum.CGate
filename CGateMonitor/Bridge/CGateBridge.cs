@@ -107,9 +107,9 @@ namespace Mercatum.CGateMonitor.Bridge
                          };
 
             CGateConnection connection = new CGateConnection(target);
-            CGateDataExchange exchange = new CGateDataExchange(connection);
+            CGateStateManager exchange = new CGateStateManager(connection);
 
-            _stream.Listener = new CGateReplicationListener(connection, _stream.Spec.StreamName);
+            _stream.Listener = new CGateReplicationListener(connection, _stream.Spec.StreamName, "todo", "todo");
             exchange.AddListener(_stream.Listener);
 
             while( !_cancellationTokenSource.Token.IsCancellationRequested )

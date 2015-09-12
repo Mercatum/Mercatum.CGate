@@ -79,7 +79,6 @@ namespace Mercatum.CGate
             switch( msg.Type )
             {
             case MessageType.MsgOpen:
-                // No additional information specified in the base message
                 HandleOpenMessage(msg);
                 return true;
 
@@ -117,11 +116,13 @@ namespace Mercatum.CGate
     /// </summary>
     public class CGateReplicationListener : AbstractCGateListener
     {
+        public string StreamName { get; private set; }
+
+        public bool IsOnline { get; private set; }
+
         public bool EnableSnapshotMode { get; set; }
 
         public bool EnableOnlineMode { get; set; }
-
-        public bool IsOnline { get; private set; }
 
         public uint LifeNum { get; set; }
 
@@ -141,22 +142,25 @@ namespace Mercatum.CGate
 
 
         public CGateReplicationListener(CGateConnection connection,
-                                        string streamName)
+                                        string streamName,
+                                        string schemePath,
+                                        string schemeSection)
         {
             if( string.IsNullOrEmpty(streamName) )
                 throw new ArgumentException("Stream name cannot be null or empty", "streamName");
 
-            string settings =
-                CGateSettingsFormatter.FormatNewListenerSettings(CGateListenerType.Replication,
-                                                                 streamName);
+            string settings = FormatListenerNewSettings(streamName,
+                                                        schemePath,
+                                                        schemeSection);
 
-            Listener = new Listener(connection.Handle, settings);
-            Listener.Handler += HandleMessage;
+            Listener = new Listener(connection.Handle, settings) { Handler = HandleMessage };
+
+            StreamName = streamName;
+            IsOnline = false;
 
             EnableSnapshotMode = true;
             EnableOnlineMode = true;
             LifeNum = 0;
-            IsOnline = false;
         }
 
 
@@ -243,7 +247,11 @@ namespace Mercatum.CGate
                 long replAct = streamDataMessage["replAct"].asLong();
                 bool inserted = replAct == 0;
 
-                handler(this, new DataArrivedEventArgs(tableName, inserted, streamDataMessage));
+                handler(this,
+                        new DataArrivedEventArgs(tableName,
+                                                 streamDataMessage.Rev,
+                                                 inserted,
+                                                 streamDataMessage));
             }
         }
 
@@ -270,6 +278,8 @@ namespace Mercatum.CGate
 
         protected virtual void HandleReplOnlineMessage(Message msg)
         {
+            IsOnline = true;
+
             EventHandler handler = SwitchedOnline;
             if( handler != null )
             {
@@ -313,6 +323,24 @@ namespace Mercatum.CGate
             P2ReplStateMessage replStateMessage = (P2ReplStateMessage)msg;
 
             ReplState = replStateMessage.ReplState;
+        }
+
+
+        private static string FormatListenerNewSettings(string streamName,
+                                                        string schemePath,
+                                                        string schemeSection)
+        {
+            if( streamName == null )
+                streamName = string.Empty;
+
+            string parameters = string.Empty;
+
+            if( !string.IsNullOrEmpty(schemePath) )
+                parameters = string.Format("scheme=|FILE|{0}|{1}", schemePath, schemeSection);
+
+            return string.Format("p2repl://{0};{1}",
+                                 streamName,
+                                 parameters);
         }
 
 
@@ -367,6 +395,8 @@ namespace Mercatum.CGate
     {
         public string TableName { get; private set; }
 
+        public long Revision { get; private set; }
+
         // TODO: replace with ChangeType
         public bool Inserted { get; private set; }
 
@@ -374,10 +404,12 @@ namespace Mercatum.CGate
 
 
         public DataArrivedEventArgs(string tableName,
+                                    long revision,
                                     bool inserted,
                                     AbstractDataMessage message)
         {
             TableName = tableName;
+            Revision = revision;
             Inserted = inserted;
             Message = message;
         }
