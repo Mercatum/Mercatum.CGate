@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
-using System.Threading;
 
 
 namespace Mercatum.CGate
@@ -13,7 +11,7 @@ namespace Mercatum.CGate
         /// </summary>
         public const string TestClientKey = "11111111";
 
-        private static bool _initialized = false;
+        private static bool _initialized;
 
         /// <summary>
         /// Initialization file path. This file describes configuration of the library — journaling mode, etc.
@@ -151,7 +149,7 @@ namespace Mercatum.CGate
             parameters["log"] = FormatLogMode(LogMode, LogSettingsSection);
             parameters["minloglevel"] = FormatLogLevel(MinLogLevel);
 
-            return CGateSettingsFormatter.FormatKeyValuePairs(parameters);
+            return CGateSettingsFormatter.FormatParameters(parameters);
         }
 
 

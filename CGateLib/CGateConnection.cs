@@ -124,7 +124,7 @@ namespace Mercatum.CGate
                                  FormatConnectionType(connectionTarget.Type),
                                  connectionTarget.Host,
                                  connectionTarget.Port,
-                                 CGateSettingsFormatter.FormatKeyValuePairs(settings));
+                                 CGateSettingsFormatter.FormatParameters(settings));
         }
 
 

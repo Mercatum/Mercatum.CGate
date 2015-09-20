@@ -116,6 +116,8 @@ namespace Mercatum.CGate
     /// </summary>
     public class CGateReplicationListener : AbstractCGateListener
     {
+        private ICollection<string> _tables;
+
         public string StreamName { get; private set; }
 
         public bool IsOnline { get; private set; }
@@ -123,6 +125,8 @@ namespace Mercatum.CGate
         public bool EnableSnapshotMode { get; set; }
 
         public bool EnableOnlineMode { get; set; }
+
+        public IDictionary<string, long> Revisions { get; set; }
 
         public uint LifeNum { get; set; }
 
@@ -143,17 +147,17 @@ namespace Mercatum.CGate
 
         public CGateReplicationListener(CGateConnection connection,
                                         string streamName,
-                                        string schemePath,
-                                        string schemeSection)
+                                        SchemeSource schemeSource = null,
+                                        ICollection<string> tables = null)
         {
             if( string.IsNullOrEmpty(streamName) )
                 throw new ArgumentException("Stream name cannot be null or empty", "streamName");
 
-            string settings = FormatListenerNewSettings(streamName,
-                                                        schemePath,
-                                                        schemeSection);
+            string settings = FormatListenerNewSettings(streamName, schemeSource, tables);
 
             Listener = new Listener(connection.Handle, settings) { Handler = HandleMessage };
+
+            _tables = tables;
 
             StreamName = streamName;
             IsOnline = false;
@@ -327,16 +331,22 @@ namespace Mercatum.CGate
 
 
         private static string FormatListenerNewSettings(string streamName,
-                                                        string schemePath,
-                                                        string schemeSection)
+                                                        SchemeSource schemeSource,
+                                                        ICollection<string> tables)
         {
             if( streamName == null )
                 streamName = string.Empty;
 
             string parameters = string.Empty;
 
-            if( !string.IsNullOrEmpty(schemePath) )
-                parameters = string.Format("scheme=|FILE|{0}|{1}", schemePath, schemeSection);
+            if( schemeSource != null )
+                parameters = string.Format("scheme={0}",
+                                           CGateSettingsFormatter.FormatSchemeSource(schemeSource));
+            else if( tables != null )
+            {
+                // TODO: investigate a case when tables.Length == 0
+                parameters = "tables=" + string.Join(",", tables);
+            }
 
             return string.Format("p2repl://{0};{1}",
                                  streamName,
@@ -369,12 +379,21 @@ namespace Mercatum.CGate
             }
             else
             {
+                // TODO: do revisions make sense when lifenum=0?
                 parameters["lifenum"] = LifeNum.ToString(CultureInfo.InvariantCulture);
 
-                // TODO: revisions
+                if( Revisions != null )
+                {
+                    foreach( var entry in Revisions )
+                    {
+                        // TODO: filter by tables?
+                        parameters["rev." + entry.Key] =
+                            entry.Value.ToString(CultureInfo.InvariantCulture);
+                    }
+                }
             }
 
-            return CGateSettingsFormatter.FormatKeyValuePairs(parameters);
+            return CGateSettingsFormatter.FormatParameters(parameters);
         }
     }
 

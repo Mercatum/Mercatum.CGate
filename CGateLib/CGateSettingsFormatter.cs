@@ -1,30 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
+﻿using System.Collections.Generic;
 using System.Text;
 
 
 namespace Mercatum.CGate
 {
     /// <summary>
-    /// Formats settings into strings used as inputs in many CGate functions.
+    /// Formats parameters into a string.
     /// </summary>
     internal static class CGateSettingsFormatter
     {
-        public static string FormatKeyValuePairs(IDictionary<string, string> settings,
-                                                 string valueSeparator = "=",
-                                                 string parametersSeparator = ";")
+        public static string FormatParameters(IDictionary<string, string> parameters,
+                                              string valueSeparator = "=",
+                                              string parametersSeparator = ";")
         {
             StringBuilder stringBuilder = new StringBuilder();
-            foreach( var item in settings )
+            foreach( var parameter in parameters )
             {
                 if( stringBuilder.Length > 0 )
                     stringBuilder.Append(parametersSeparator);
-                stringBuilder.Append(item.Key);
+                stringBuilder.Append(parameter.Key);
                 stringBuilder.Append(valueSeparator);
-                stringBuilder.Append(item.Value);
+                stringBuilder.Append(parameter.Value);
             }
             return stringBuilder.ToString();
+        }
+
+
+        public static string FormatSchemeSource(SchemeSource schemeSource)
+        {
+            return string.Format("|FILE|{0}|{1}", schemeSource.Path, schemeSource.Section);
         }
     }
 }

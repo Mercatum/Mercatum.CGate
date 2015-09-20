@@ -45,16 +45,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AbstractCGateListener.cs" />
+    <Compile Include="CGateListener.cs" />
     <Compile Include="CGateConnection.cs" />
     <Compile Include="CGateConnectionTarget.cs" />
     <Compile Include="CGateConnectionType.cs" />
+    <Compile Include="CGatePublisher.cs" />
     <Compile Include="CGateStateManager.cs" />
     <Compile Include="CGateEnvironment.cs" />
     <Compile Include="CGateLogLevel.cs" />
     <Compile Include="CGateLogMode.cs" />
     <Compile Include="CGateSettingsFormatter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SchemeSource.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="CGateLib.nuspec" />

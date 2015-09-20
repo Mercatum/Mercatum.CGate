@@ -109,7 +109,7 @@ namespace Mercatum.CGateMonitor.Bridge
             CGateConnection connection = new CGateConnection(target);
             CGateStateManager exchange = new CGateStateManager(connection);
 
-            _stream.Listener = new CGateReplicationListener(connection, _stream.Spec.StreamName, "todo", "todo");
+            _stream.Listener = new CGateReplicationListener(connection, _stream.Spec.StreamName, new SchemeSource("todo", "todo"));
             exchange.AddListener(_stream.Listener);
 
             while( !_cancellationTokenSource.Token.IsCancellationRequested )
