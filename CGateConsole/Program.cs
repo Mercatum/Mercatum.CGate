@@ -157,11 +157,28 @@ namespace CGateConsole
             //
 
             CGateStateManager stateManager = new CGateStateManager(connection);
+            stateManager.ConnectionStateChanged +=
+                (sender, eventArgs) =>
+                    Console.WriteLine("Connection state changed: {0}", eventArgs.Connection.State);
+
+            stateManager.ListenerStateChanged +=
+                (sender, eventArgs) =>
+                    Console.WriteLine("Listener state changed: {0}", eventArgs.Listener.State);
+
             stateManager.AddListener(listener);
 
             while( !exitRequested )
             {
-                stateManager.Perform();
+                try
+                {
+                    stateManager.Perform();
+                }
+                catch( CGateException e )
+                {
+                    Console.WriteLine("CGate exception: {0}", e.ErrCode);
+                    Console.WriteLine("{0}", e);
+                    throw;
+                }
             }
 
             //
