@@ -9,6 +9,7 @@ using ru.micexrts.cgate;
 
 namespace Mercatum.CGate
 {
+    // TODO: better name
     public class CGateStateManager
     {
         private readonly CGateConnection _connection;
@@ -16,9 +17,8 @@ namespace Mercatum.CGate
         private readonly List<PublisherHolder> _publishers = new List<PublisherHolder>();
 
         private State _prevConnectionState;
-
-
         private DateTime _connectionOpenTime = DateTime.MinValue;
+
 
         /// <summary>
         /// Timeout used in calls to CGateConnection.Process().
@@ -108,10 +108,10 @@ namespace Mercatum.CGate
 
             if( currentState != _prevConnectionState )
             {
-                if( ConnectionStateChanged != null )
-                    ConnectionStateChanged(this, new ConnectionStateChangedEventArgs(_connection));
-
                 _prevConnectionState = currentState;
+                var handler = ConnectionStateChanged;
+                if( handler != null )
+                    handler(this, new ConnectionStateChangedEventArgs(_connection));
             }
 
             switch( currentState )
@@ -138,10 +138,10 @@ namespace Mercatum.CGate
 
                 if( currentState != holder.PreviousState )
                 {
-                    if( PublisherStateChanged != null )
-                        PublisherStateChanged(this,
-                                              new PublisherStateChangedEventArgs(holder.Publisher));
                     holder.PreviousState = currentState;
+                    var handler = PublisherStateChanged;
+                    if( handler != null )
+                        handler(this, new PublisherStateChangedEventArgs(holder.Publisher));
                 }
 
                 switch( currentState )
@@ -181,10 +181,10 @@ namespace Mercatum.CGate
 
                 if( currentState != holder.PreviousState )
                 {
-                    if( ListenerStateChanged != null )
-                        ListenerStateChanged(this,
-                                             new ListenerStateChangedEventArgs(holder.Listener));
                     holder.PreviousState = currentState;
+                    var handler = ListenerStateChanged;
+                    if( handler != null )
+                        handler(this, new ListenerStateChangedEventArgs(holder.Listener));
                 }
 
                 switch( currentState )
@@ -196,6 +196,8 @@ namespace Mercatum.CGate
 
                 case State.Closed:
                     DateTime now = DateTime.Now;
+                    // TODO: there is no need to check the state for listeners with scheduled reopen.
+                    // TODO: Keep them in a priority queue, this also solves the issue with exceptions (see above).
                     if( holder.NextOpenTime <= DateTime.Now )
                     {
                         if( now - holder.LastOpenedTime <= TooFastListenerReopenThreshold )
