@@ -36,7 +36,7 @@ namespace CGateConsole
             CGateEnvironment.LogMode = CGateLogMode.P2;
             CGateEnvironment.LogSettingsSection = "p2syslog";
 
-            CGateEnvironment.Init();
+            CGateEnvironment.Initialize();
             Console.WriteLine("CGate environment initialized.");
 
             //

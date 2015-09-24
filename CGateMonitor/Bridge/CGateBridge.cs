@@ -68,7 +68,7 @@ namespace Mercatum.CGateMonitor.Bridge
 
         public void Init()
         {
-            CGateEnvironment.Init();
+            CGateEnvironment.Initialize();
         }
 
 

@@ -65,7 +65,7 @@ namespace Mercatum.CGate
         }
 
 
-        public static void Init()
+        public static void Initialize()
         {
             // TODO: thread-safe initialization
             // TODO: check IniPath?
