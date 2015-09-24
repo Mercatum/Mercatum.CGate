@@ -99,12 +99,12 @@ namespace Mercatum.CGate
         }
 
 
-        protected virtual void HandleCloseMessage(Message baseMsg)
+        protected virtual void HandleCloseMessage(Message msg)
         {
             EventHandler<ListenerClosedEventArgs> handler = ListenerClosed;
             if( handler != null )
             {
-                CloseMessage closeMsg = (CloseMessage)baseMsg;
+                CloseMessage closeMsg = (CloseMessage)msg;
                 handler(this, new ListenerClosedEventArgs(closeMsg.CloseReason));
             }
         }
@@ -227,20 +227,20 @@ namespace Mercatum.CGate
         }
 
 
-        protected override void HandleCloseMessage(Message baseMsg)
+        protected override void HandleCloseMessage(Message msg)
         {
             IsOnline = false;
 
-            base.HandleCloseMessage(baseMsg);
+            base.HandleCloseMessage(msg);
         }
 
 
-        protected virtual void HandleStreamDataMessage(Message baseMsg)
+        protected virtual void HandleStreamDataMessage(Message msg)
         {
             EventHandler<DataArrivedEventArgs> handler = DataArrived;
             if( handler != null )
             {
-                StreamDataMessage streamDataMessage = (StreamDataMessage)baseMsg;
+                StreamDataMessage streamDataMessage = (StreamDataMessage)msg;
 
                 // TODO: keep scheme in DataArrivedEventArgs, expose tableName and `inserted` as properties there
                 // to be calculated only when required
@@ -260,7 +260,7 @@ namespace Mercatum.CGate
         }
 
 
-        protected virtual void HandleTnBeginMessage(Message baseMsg)
+        protected virtual void HandleTnBeginMessage(Message msg)
         {
             EventHandler handler = TransactionBegin;
             if( handler != null )
