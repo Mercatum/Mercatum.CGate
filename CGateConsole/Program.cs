@@ -163,10 +163,10 @@ namespace CGateConsole
             {
                 try
                 {
-                    connectionStateController.CheckState();
+                    connectionStateController.CheckStateSafe();
 
                     if( connection.State == State.Active )
-                        listenerStateController.CheckState();
+                        listenerStateController.CheckStateSafe();
 
                     connection.Process(1000);
                 }

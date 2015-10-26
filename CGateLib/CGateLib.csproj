@@ -78,7 +78,11 @@
     <Compile Include="CGateLogLevel.cs" />
     <Compile Include="CGateLogMode.cs" />
     <Compile Include="CGateSettingsFormatter.cs" />
+    <Compile Include="DataArrivedEventArgs.cs" />
+    <Compile Include="DataClearedEventArgs.cs" />
     <Compile Include="IHavingCGateState.cs" />
+    <Compile Include="LifeNumChangedEventArgs.cs" />
+    <Compile Include="ListenerClosedEventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SchemeSource.cs" />
     <Compile Include="StateChangedEventArgs.cs" />

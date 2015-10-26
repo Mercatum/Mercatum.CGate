@@ -58,6 +58,17 @@ namespace Mercatum.CGate
         }
 
 
+        /// <summary>
+        /// Checks the object state.
+        /// </summary>
+        /// <remarks>
+        /// CGate library allows objects to throw exceptions even in such cases when
+        /// they should be handled by moving the object into the error state (for example,
+        /// when a connection can't be established due to inaccessible router). There is no
+        /// good way to separate such exceptions from "true" exceptions, thus all of them will
+        /// be thrown to the user code. The application can handle them in any way it thinks
+        /// it will be suitable and can continue to work the controller object.
+        /// </remarks>
         public void CheckState()
         {
             State currentState = Target.State;
@@ -88,13 +99,42 @@ namespace Mercatum.CGate
                     }
                     else
                     {
-                        // TODO: if an exception is thrown by Open should it be classified as faulted Open
-                        // with timeout after?
-                        Target.Open();
+                        try
+                        {
+                            Target.Open();
+                        }
+                        catch( CGateException e )
+                        {
+                            // When exception is thrown apply some rules as if the object goes into
+                            // the error state.
+                            _nextOpenTime = now + ReopenTimeout;
+                            throw;
+                        }
                         _previousOpenTime = now;
                     }
                 }
                 break;
+            }
+        }
+
+
+        /// <summary>
+        /// Checks the object state.
+        /// </summary>
+        /// <remarks>
+        /// This version swallows all the exceptions and reports them using the CGate logging functions.
+        /// It is recommended to use CheckState for development and switch to CheckStateSafe later (or use
+        /// own exception handling).
+        /// </remarks>
+        public void CheckStateSafe()
+        {
+            try
+            {
+                CheckState();
+            }
+            catch( CGateException e )
+            {
+                CGateEnvironment.LogError("State check error: {0}", e);
             }
         }
     }
