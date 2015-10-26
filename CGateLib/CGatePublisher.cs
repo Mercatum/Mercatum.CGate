@@ -8,7 +8,7 @@ using ru.micexrts.cgate.message;
 
 namespace Mercatum.CGate
 {
-    public class AbstractCGatePublisher : IDisposable
+    public class CGatePublisher : IHavingCGateState, IDisposable
     {
         private bool _disposed;
 
@@ -81,7 +81,7 @@ namespace Mercatum.CGate
     }
 
 
-    public class CGateMQPublisher : AbstractCGatePublisher
+    public class CGateMQPublisher : CGatePublisher
     {
         public CGateMQPublisher(CGateConnection connection,
                                 string name,

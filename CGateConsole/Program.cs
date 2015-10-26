@@ -36,14 +36,14 @@ namespace CGateConsole
             CGateEnvironment.LogMode = CGateLogMode.P2;
             CGateEnvironment.LogSettingsSection = "p2syslog";
 
-            CGateEnvironment.Initialize();
+            CGateEnvironment.Open();
             Console.WriteLine("CGate environment initialized.");
 
             //
             // Connection
             //
 
-            var target = new CGateConnectionTarget()
+            var target = new CGateConnectionTarget
                          {
                              Type = CGateConnectionType.Tcp,
                              Host = "127.0.0.1",
@@ -156,22 +156,14 @@ namespace CGateConsole
             // State manager and main loop
             //
 
-            CGateStateManager stateManager = new CGateStateManager(connection);
-            stateManager.ConnectionStateChanged +=
-                (sender, eventArgs) =>
-                    Console.WriteLine("Connection state changed: {0}", eventArgs.Connection.State);
-
-            stateManager.ListenerStateChanged +=
-                (sender, eventArgs) =>
-                    Console.WriteLine("Listener state changed: {0}", eventArgs.Listener.State);
-
-            stateManager.AddListener(listener);
+            CGateStateMachine b = new CGateStateMachine(listener);
+            b.CheckState();
 
             while( !exitRequested )
             {
                 try
                 {
-                    stateManager.Perform();
+                    connection.Process(1000);
                 }
                 catch( CGateException e )
                 {

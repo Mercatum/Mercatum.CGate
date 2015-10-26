@@ -7,7 +7,7 @@ using ru.micexrts.cgate;
 
 namespace Mercatum.CGate
 {
-    public class CGateConnection : IDisposable
+    public class CGateConnection : IHavingCGateState, IDisposable
     {
         private readonly Connection _connection;
         private bool _disposed;

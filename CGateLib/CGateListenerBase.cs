@@ -11,7 +11,7 @@ namespace Mercatum.CGate
     /// <summary>
     /// Common interface for different types of CGate listeners.
     /// </summary>
-    public abstract class AbstractCGateListener : IDisposable
+    public abstract class CGateListenerBase : IHavingCGateState, IDisposable
     {
         protected Listener Listener { get; set; }
 
@@ -114,7 +114,7 @@ namespace Mercatum.CGate
     /// <summary>
     /// A listener receiving replication streams.
     /// </summary>
-    public class CGateReplicationListener : AbstractCGateListener
+    public class CGateReplicationListener : CGateListenerBase
     {
         private ICollection<string> _tables;
 

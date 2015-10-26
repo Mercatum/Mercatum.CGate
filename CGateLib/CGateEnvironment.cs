@@ -11,7 +11,7 @@ namespace Mercatum.CGate
         /// </summary>
         public const string TestClientKey = "11111111";
 
-        private static bool _initialized;
+        private static bool _opened;
 
         /// <summary>
         /// Initialization file path. This file describes configuration of the library — journaling mode, etc.
@@ -51,9 +51,9 @@ namespace Mercatum.CGate
         /// <summary>
         /// Tells if the environment was sucessfully initialized.
         /// </summary>
-        public static bool Initialized
+        public static bool Opened
         {
-            get { return _initialized; }
+            get { return _opened; }
         }
 
 
@@ -65,7 +65,7 @@ namespace Mercatum.CGate
         }
 
 
-        public static void Initialize()
+        public static void Open()
         {
             // TODO: thread-safe initialization
             // TODO: check IniPath?
@@ -78,14 +78,14 @@ namespace Mercatum.CGate
 
             string settings = FormatSettings();
             ru.micexrts.cgate.CGate.Open(settings);
-            _initialized = true;
+            _opened = true;
         }
 
 
         public static void Close()
         {
             ru.micexrts.cgate.CGate.Close();
-            _initialized = false;
+            _opened = false;
         }
 
 
