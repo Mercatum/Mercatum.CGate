@@ -8,7 +8,7 @@ namespace Mercatum.CGate
     /// <summary>
     /// Implements recommended strategy of managing state of cgate objects.
     /// </summary>
-    public class CGateStateMachine
+    public class CGateStateController
     {
         private State _previousState;
         private DateTime _previousOpenTime = DateTime.MinValue;
@@ -17,7 +17,7 @@ namespace Mercatum.CGate
         /// <summary>
         /// Gets the object which state is controlled by this object.
         /// </summary>
-        public IHavingCGateState Object { get; private set; }
+        public IHavingCGateState Target { get; private set; }
 
         /// <summary>
         /// Gets or sets timeout to wait before next attempt to open the object is made 
@@ -45,13 +45,13 @@ namespace Mercatum.CGate
         public event EventHandler<StateChangedEventArgs> StateChanged;
 
 
-        public CGateStateMachine(IHavingCGateState @object)
+        public CGateStateController(IHavingCGateState target)
         {
-            if( @object == null )
-                throw new ArgumentNullException("object");
+            if( target == null )
+                throw new ArgumentNullException("target");
 
-            Object = @object;
-            _previousState = @object.State;
+            Target = target;
+            _previousState = target.State;
 
             ReopenTimeout = TimeSpan.FromSeconds(30);
             TooFastReopenThreshold = TimeSpan.FromSeconds(3);
@@ -60,21 +60,21 @@ namespace Mercatum.CGate
 
         public void CheckState()
         {
-            State currentState = Object.State;
+            State currentState = Target.State;
 
             if( currentState != _previousState )
             {
                 var handler = StateChanged;
                 if( handler != null )
-                    handler(this, new StateChangedEventArgs(Object));
+                    handler(this, new StateChangedEventArgs(Target));
 
                 _previousState = currentState;
             }
 
-            switch( Object.State )
+            switch( Target.State )
             {
             case State.Error:
-                Object.Close();
+                Target.Close();
                 _nextOpenTime = DateTime.Now + ReopenTimeout;
                 break;
 
@@ -90,24 +90,12 @@ namespace Mercatum.CGate
                     {
                         // TODO: if an exception is thrown by Open should it be classified as faulted Open
                         // with timeout after?
-                        Object.Open();
+                        Target.Open();
                         _previousOpenTime = now;
                     }
                 }
                 break;
             }
-        }
-    }
-
-
-    public class StateChangedEventArgs : EventArgs
-    {
-        public IHavingCGateState Object { get; private set; }
-
-
-        public StateChangedEventArgs(IHavingCGateState o)
-        {
-            Object = o;
         }
     }
 }

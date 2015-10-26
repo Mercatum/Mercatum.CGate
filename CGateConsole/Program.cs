@@ -156,13 +156,18 @@ namespace CGateConsole
             // State manager and main loop
             //
 
-            CGateStateMachine b = new CGateStateMachine(listener);
-            b.CheckState();
+            CGateStateController connectionStateController = new CGateStateController(connection);
+            CGateStateController listenerStateController = new CGateStateController(listener);
 
             while( !exitRequested )
             {
                 try
                 {
+                    connectionStateController.CheckState();
+
+                    if( connection.State == State.Active )
+                        listenerStateController.CheckState();
+
                     connection.Process(1000);
                 }
                 catch( CGateException e )
