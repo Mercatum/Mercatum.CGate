@@ -54,17 +54,28 @@ namespace Mercatum.CGate
         }
 
 
-        public void Process(TimeSpan timeout)
+        public bool Process(TimeSpan timeout)
         {
-            Process((uint)timeout.TotalMilliseconds);
+            return Process((uint)timeout.TotalMilliseconds);
         }
 
 
-        public void Process(uint timeout)
+        public bool Process(uint timeout)
         {
             ErrorIfDisposed();
-            // TODO: analyze error code
-            _connection.Process(timeout);
+
+            ErrorCode result = _connection.Process(timeout);
+            switch( result )
+            {
+            case ErrorCode.Ok:
+                return true;
+
+            case ErrorCode.TimeOut:
+                return false;
+
+            default:
+                throw new CGateException(result, "Failed to process messages");
+            }
         }
 
 
