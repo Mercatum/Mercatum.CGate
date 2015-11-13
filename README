@@ -5,3 +5,5 @@ CGate is the protocol which is used by Moscow Stock Exchange to allow external a
 access to the market data.
 
 The project is in alpha-stage, any part can be changed without prior notifications, use with caution.
+
+The project is licensed under the Apache license, see LICENSE for more details.
