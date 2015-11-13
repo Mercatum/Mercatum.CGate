@@ -1,0 +1,7 @@
+The library adds higher-level API on top of CGate .NET libraries making them easier to use
+in user applications.
+
+CGate is the protocol which is used by Moscow Stock Exchange to allow external applications to have
+access to the market data.
+
+The project is in alpha-stage, any part can be changed without prior notifications, use with caution.
