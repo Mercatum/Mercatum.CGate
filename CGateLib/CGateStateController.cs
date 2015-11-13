@@ -137,5 +137,17 @@ namespace Mercatum.CGate
                 CGateEnvironment.LogError("State check error: {0}", e);
             }
         }
+
+
+        /// <summary>
+        /// Returns a period of time when no activity is expected for the object.
+        /// </summary>
+        /// <returns>TimeSpan object representing the period of inactivity.</returns>
+        public TimeSpan GetInactivityPeriod()
+        {
+            if( Target.State == State.Closed )
+                return _nextOpenTime - DateTime.Now;
+            return TimeSpan.Zero;
+        }
     }
 }
