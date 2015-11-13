@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 
 using Mercatum.CGate;
 
@@ -14,6 +15,19 @@ namespace CGateConsole
     {
         private static void Main(string[] args)
         {
+            string streamName = "FORTS_FUTINFO_REPL";
+            string[] tables = { "heartbeat" }; // use null to access all possible tables
+
+            // How to connect to the router
+            var target = new CGateConnectionTarget
+                         {
+                             Type = CGateConnectionType.Tcp,
+                             Host = "127.0.0.1",
+                             Port = 4010,
+                             AppName = "CGateConsole"
+                         };
+
+            // Exit the main loop when Ctrl+C is pressed
             bool exitRequested = false;
             Console.CancelKeyPress += (sender,
                                        eventArgs) =>
@@ -43,14 +57,6 @@ namespace CGateConsole
             // Connection
             //
 
-            var target = new CGateConnectionTarget
-                         {
-                             Type = CGateConnectionType.Tcp,
-                             Host = "127.0.0.1",
-                             Port = 4001,
-                             AppName = "CGateConsole"
-                         };
-
             CGateConnection connection = new CGateConnection(target);
             Console.WriteLine("Connection object created.");
 
@@ -59,21 +65,9 @@ namespace CGateConsole
             //
 
             var listener = new CGateReplicationListener(connection,
-                                                        "FORTS_FUTINFO_REPL",
-                                                        tables: new[] { "heartbeat" });
+                                                        streamName,
+                                                        tables: tables);
 
-/*
-            CGateReplicationListener listener = new CGateReplicationListener(connection,
-                                                                             "FORTS_FUTTRADE_REPL",
-                                                                             "ini/forts_scheme.ini",
-                                                                             "FutTrade");
- */
-/*
-            CGateReplicationListener listener = new CGateReplicationListener(connection,
-                                                                             "FORTS_FUTINFO_REPL",
-                                                                             "ini/forts_scheme.ini",
-                                                                             "FUTINFO");
- */
             listener.ListenerOpened +=
                 (sender, eventArgs) =>
                 {
@@ -98,7 +92,7 @@ namespace CGateConsole
                 (sender, eventArgs) =>
                 {
                     CGateReplicationListener lsn = (CGateReplicationListener)sender;
-                    Console.WriteLine("{0}: New life num {1}.",
+                    Console.WriteLine("{0}: life num {1}.",
                                       lsn.StreamName,
                                       eventArgs.LifeNum);
                 };
@@ -115,10 +109,10 @@ namespace CGateConsole
                 {
                     CGateReplicationListener lsn = (CGateReplicationListener)sender;
                     Console.WriteLine(
-                        "{0}: clear revisions <= {1} for table {2}.",
+                        "{0}: {1}: delete revisions <= {2}.",
                         lsn.StreamName,
-                        eventArgs.Revision,
-                        eventArgs.TableName);
+                        eventArgs.TableName,
+                        eventArgs.Revision);
                 };
 
             listener.TransactionBegin +=
@@ -157,24 +151,38 @@ namespace CGateConsole
             //
 
             CGateStateController connectionStateController = new CGateStateController(connection);
+            connectionStateController.StateChanged +=
+                (sender, eventArgs) =>
+                {
+                    Console.WriteLine("Connection changed state to {0}", eventArgs.Target.State);
+                };
+
             CGateStateController listenerStateController = new CGateStateController(listener);
+            listenerStateController.StateChanged +=
+                (sender, eventArgs) =>
+                {
+                    Console.WriteLine("Listener changed state to {0}", eventArgs.Target.State);
+                };
 
             while( !exitRequested )
             {
                 try
                 {
-                    connectionStateController.CheckStateSafe();
+                    connectionStateController.CheckState();
+                    TimeSpan inactivityPeriod = connectionStateController.GetInactivityPeriod();
+                    if( inactivityPeriod != TimeSpan.Zero )
+                        Thread.Sleep(inactivityPeriod);
 
                     if( connection.State == State.Active )
-                        listenerStateController.CheckStateSafe();
+                        listenerStateController.CheckState();
 
-                    connection.Process(1000);
+                    if( connection.State == State.Opening || connection.State == State.Active )
+                        connection.Process(1000);
                 }
                 catch( CGateException e )
                 {
                     Console.WriteLine("CGate exception: {0}", e.ErrCode);
                     Console.WriteLine("{0}", e);
-                    throw;
                 }
             }
 
