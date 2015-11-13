@@ -56,16 +56,16 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="cgate_net64">
-      <HintPath>C:\Moscow Exchange\SpectraCGate\bin\cgate_net64.dll</HintPath>
+    <Reference Include="cgate_net64" Condition="'$(Platform)'=='x64'">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\CGateBin\cgate_net64.dll</HintPath>
+    </Reference>
+    <Reference Include="cgate_net" Condition="'$(Platform)'=='x86'">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\CGateBin\cgate_net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CGateListenerBase.cs" />
